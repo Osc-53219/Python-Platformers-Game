@@ -1,2 +1,2 @@
 # Python-Platformers-Game
-Simple Python Game
+Python Game
