@@ -23,6 +23,7 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 # This class will inherit sprite from pygame because it makes it easy to do picture perfect collision
 class Player(pygame.sprite.Sprite):
     COLOR = (255, 0, 0)
+    GRAVITY = 1 # We are adding an acceleration for gravity. If you want the gravity to be faster you can increment this number
 
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height) # Rather than representing all of these values individually, we are going to put them on the rectangle which will make it easier for us to move the player around
@@ -31,6 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = None
         self.direction = "left" # We are adding this direction becuase we need to keep track of what direction the Player is facing
         self.animation_count = 0 # We need to reset the count to change the animation frame
+        self.fall_count = 0 # We need to keep track of how long we have been falling so that we know how quicly we should be accelerating downward 
 
     def move(self, dx, dy): # Adding move function which will take in the displacement of the x and y direction
         self.rect.x += dx # If we want to move up, down, left, right we just change the sign of dx and dy
@@ -49,7 +51,10 @@ class Player(pygame.sprite.Sprite):
             self.animation_count = 0
 
     def loop(self, fps): # This loop will be called once every frame (one itereation of the while loop). This will move our character in the correct direction
+        self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY) # This will give us somewhat realistic fall of gravity
         self.move(self.x_vel, self.y_vel)
+
+        self.fall_count += 1
 
     def draw(self, win): # THis draw function wil draw the window, color, and rect
         pygame.draw.rect(win, self.COLOR, self.rect)
