@@ -13,7 +13,6 @@ pygame.init()
 pygame.display.set_caption("Platformer") 
 
 # Defining global variables
-BG_COLOR = (255, 255, 255)
 WIDTH, HEIGHT = 1000, 800
 FPS = 60
 PLAYER_VEL = 5
@@ -30,16 +29,24 @@ def get_background(name):
     # This loop provides is with how many tiles we need to create in the x and y direction
     for i in range(WIDTH // width + 1): # Integer diving this which tells us appox how many tiles you need x direction to fill the whole screen. To make sure there are no gaps we add 1 
         for j in range(HEIGHT // height + 1): # Same exact thing is done in the y direction
-            pos = [i * width, j * height] # This is going to denote the position of the top left hand corner of the current tile we are adding to this tiles list
+            pos = (i * width, j * height) # This is going to denote the position of the top left hand corner of the current tile we are adding to this tiles list. Changed to tuple directly
             tiles.append(pos)
 
     return tiles, image # We return the tiles and image so we can know what image we are going to use when we are drawing all these tiles
+
+
+def draw(window, background, bg_image):
+    for tile in background: 
+        window.blit(bg_image, tile) # This is where we draw the background: passing in the position in which we want to draW it at which is going to be 'tile'
+
+    pygame.display.update() # We update the frame so that every single frame clears the screen
 
 
 
 # Making the main function: We will run this to start the game
 def main(window):
     clock = pygame.time.Clock()
+    background, bg_image = get_background("Purple.png") # Adding backgrounf to main function
 
         # This while loop will act as our event loop
     run = True
@@ -50,6 +57,8 @@ def main(window):
             if event.type == pygame.QUIT: # First event we will check for is if the user quit the game
                 run = False
                 break
+
+        draw(window, background, bg_image)
              
     pygame.quit()
     quit()
