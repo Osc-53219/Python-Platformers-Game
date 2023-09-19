@@ -20,6 +20,18 @@ PLAYER_VEL = 5
 # Setting up mygame window
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
+# This class will inherit sprite from pygame because it makes it easy to do picture perfect collision
+class Player(pygame.sprite.Sprite):
+    COLOR = (255, 0, 0)
+
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height) # Rather than representing all of these values individually, we are going to put them on the rectangle which will make it easier for us to move the player around
+        self.x_vel = 0
+        self.y_vel = 0
+        self.mask = None
+
+
+
 # Making function for background: 
 def get_background(name):
     image = pygame.image.load(join("assets", "Background", name))
