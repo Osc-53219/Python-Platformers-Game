@@ -48,6 +48,13 @@ class Player(pygame.sprite.Sprite):
             self.direction = "right"
             self.animation_count = 0
 
+    def loop(self, fps): # This loop will be called once every frame (one itereation of the while loop). This will move our character in the correct direction
+        self.move(self.x_vel, self.y_vel)
+
+    def draw(self, win): # THis draw function wil draw the window, color, and rect
+        pygame.draw.rect(win, self.COLOR, self.rect)
+
+
 
 # Making function for background: 
 def get_background(name):
@@ -64,21 +71,22 @@ def get_background(name):
     return tiles, image # We return the tiles and image so we can know what image we are going to use when we are drawing all these tiles
 
 
-def draw(window, background, bg_image):
+def draw(window, background, bg_image, player):
     for tile in background: 
         window.blit(bg_image, tile) # This is where we draw the background: passing in the position in which we want to draW it at which is going to be 'tile'
+
+    player.draw(window)
 
     pygame.display.update() # We update the frame so that every single frame clears the screen
 
 
-
-# Making the main function: We will run this to start the game
-def main(window):
+def main(window): # Making the main function: We will run this to start the game
     clock = pygame.time.Clock()
     background, bg_image = get_background("Purple.png") # Adding backgrounf to main function
 
-        # This while loop will act as our event loop
-    run = True
+    player = Player(100, 100, 50, 50)
+
+    run = True   # This while loop will act as our event loop
     while run:
         clock.tick(FPS) # This ensures that our while loop is going to run no more than 60 FPS to regulate the frame rate across different devices
         
@@ -87,7 +95,7 @@ def main(window):
                 run = False
                 break
 
-        draw(window, background, bg_image)
+        draw(window, background, bg_image, player)
              
     pygame.quit()
     quit()
