@@ -17,3 +17,19 @@ BG_COLOR = (255, 255, 255)
 WIDTH, HEIGHT = 1000, 800
 FPS = 60
 PLAYER_VEL = 5
+
+# Setting up mygame window
+window = pygame.display.set_mode((WIDTH, HEIGHT))
+
+# Making the main function: We will run this to start the game
+def main(window):
+        clock = pygame.time.Clock()
+
+        # This while loop will act as our event loop
+        run = True
+        while run:
+            clock.tick(FPS) # This ensures that our while loop is going to run no more than 60 FPS to regulate the frame rate across different devices
+
+# Purpose of this line in the function is to only call the main function if we run this file directly 
+if __name__ == "__main__":
+    main(window)
