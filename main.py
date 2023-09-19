@@ -37,13 +37,13 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += dy
 
     def move_left(self, veL):
-        self.x_vel = -vel # We are using negative velocity to move left which means we have to subtract from our x position
+        self.x_vel = -veL # We are using negative velocity to move left which means we have to subtract from our x position
         if self.direction != "left":
             self.direction = "left"
             self.animation_count = 0
 
     def move_right(self, veL):
-        self.x_vel = vel
+        self.x_vel = veL
         if self.direction != "right":
             self.direction = "right"
             self.animation_count = 0
@@ -80,11 +80,21 @@ def draw(window, background, bg_image, player):
     pygame.display.update() # We update the frame so that every single frame clears the screen
 
 
+def handle_move(player): # This function is in charge of moving player
+    keys = pygame.key.get_pressed() # Checking if the keys on the keyboard are getting pressed
+
+    player.x_vel = 0 # It's important to set the player velocity to zero to stay consistant with movement
+    if keys[pygame.K_LEFT]:
+        player.move_left(PLAYER_VEL)
+    if keys[pygame.K_RIGHT]:
+        player.move_right(PLAYER_VEL)
+
+
 def main(window): # Making the main function: We will run this to start the game
     clock = pygame.time.Clock()
-    background, bg_image = get_background("Purple.png") # Adding backgrounf to main function
+    background, bg_image = get_background("Purple.png") # Adding background to main function
 
-    player = Player(100, 100, 50, 50)
+    player = Player(100, 100, 50, 50) # Adding player
 
     run = True   # This while loop will act as our event loop
     while run:
@@ -94,7 +104,9 @@ def main(window): # Making the main function: We will run this to start the game
             if event.type == pygame.QUIT: # First event we will check for is if the user quit the game
                 run = False
                 break
-
+        
+        player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
+        handle_move(player)
         draw(window, background, bg_image, player)
              
     pygame.quit()
