@@ -29,7 +29,24 @@ class Player(pygame.sprite.Sprite):
         self.x_vel = 0
         self.y_vel = 0
         self.mask = None
+        self.direction = "left" # We are adding this direction becuase we need to keep track of what direction the Player is facing
+        self.animation_count = 0 # We need to reset the count to change the animation frame
 
+    def move(self, dx, dy): # Adding move function which will take in the displacement of the x and y direction
+        self.rect.x += dx # If we want to move up, down, left, right we just change the sign of dx and dy
+        self.rect.y += dy
+
+    def move_left(self, veL):
+        self.x_vel = -vel # We are using negative velocity to move left which means we have to subtract from our x position
+        if self.direction != "left":
+            self.direction = "left"
+            self.animation_count = 0
+
+    def move_right(self, veL):
+        self.x_vel = vel
+        if self.direction != "right":
+            self.direction = "right"
+            self.animation_count = 0
 
 
 # Making function for background: 
