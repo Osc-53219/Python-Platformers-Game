@@ -52,6 +52,7 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
     COLOR = (255, 0, 0)
     GRAVITY = 1 # We are adding an acceleration for gravity. If you want the gravity to be faster you can increment this number
     SPRITES = load_sprite_sheets("MainCharacters", "MaskDude", 32, 32, True) # This will load the  MainCharacters dir and then the second dir will be the name of the character we want to load. We need to set the width and height to 32 and we are passing True becuase we want a multidirectional sprite
+    ANIMATION_DELAY = 3 # This is going to account for the amount of delay between changing sprites
 
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height) # Rather than representing all of these values individually, we are going to put them on the rectangle which will make it easier for us to move the player around
@@ -83,9 +84,20 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         self.move(self.x_vel, self.y_vel)
 
         self.fall_count += 1
+        self.update_sprite()
+
+    def update_sprite(self): # This function will update our sprite. 
+        sprite_sheet = "idle" # This the defualt sprite sheet
+        if self.x_vel != 0:
+            sprite_sheet = "run"
+
+        sprite_sheet_name = sprite_sheet + "_" + self.direction
+        sprites = self.SPRITES[sprite_sheet_name]
+        sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites) # Every 5 frames we want to show a different sprite in whatever animation we are using. For this we take the animation count, we divide it by 5, and then we mod whatever the len of our sprite is. Making this dynamic meaning it will work for any sprite
+        self.sprite = sprites[sprite_index]
+        self.animation_count += 1
 
     def draw(self, win): # THis draw function wil draw the window, color, and rect
-        self.sprite = self.SPRITES["idle_" + self.direction][0] # This is accessing the key from our dictionary. Then we are accessing the first frame of our dictionary which is 0
         win.blit(self.sprite, (self.rect.x, self.rect.y))
 
 
