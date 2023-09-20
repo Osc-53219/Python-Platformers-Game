@@ -55,6 +55,7 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
     ANIMATION_DELAY = 3 # This is going to account for the amount of delay between changing sprites
 
     def __init__(self, x, y, width, height):
+        super().__init__()
         self.rect = pygame.Rect(x, y, width, height) # Rather than representing all of these values individually, we are going to put them on the rectangle which will make it easier for us to move the player around
         self.x_vel = 0
         self.y_vel = 0
@@ -105,9 +106,19 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
     def draw(self, win): # THis draw function wil draw the window, color, and rect
         win.blit(self.sprite, (self.rect.x, self.rect.y))
 
+class Object(pygame.sprite.Sprite): # This will be a base class that we will use for all objects so that the collision will be uniform across all of them
+    def __init__(self, x, y, width, height, name=None):
+        super().__init__()
+        self.rect = pygame.Rect(x, y, width, height)
+        self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+        self.width = width
+        self.height = height
+        self.name = name
 
-# Making function for background: 
-def get_background(name):
+    def draw(self, win):
+        win.blit(self.image, (self.rect.x, self.rect.y))
+
+def get_background(name): # Making function for background
     image = pygame.image.load(join("assets", "Background", name))
     _, _, width, height = image.get_rect() # This provides the x, y, width, and height of ("_, _," means we dont care about the x, y) 
     tiles = []
