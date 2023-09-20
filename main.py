@@ -20,8 +20,35 @@ PLAYER_VEL = 5
 # Setting up mygame window
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
-# This class will inherit sprite from pygame because it makes it easy to do picture perfect collision
-class Player(pygame.sprite.Sprite):
+def flip(sprites): # This is the function that will flip our image
+    return[pygame.transform.flip(sprite, True, False) for sprite in sprites]
+
+def load_sprite_sheets(dir1, dir2, width, height, direction=False):
+    path = join("assets", dir1, dir2) # This is the path to the images we will be loading
+    images = [f for f in listdir(path) if isfile(join(path, f))] # This loop will load every single file that is inside of these directories
+
+    all_sprites = {} # This dictionary will have key value pairs. The key will be the animation style and the values will be all of the images in that animation
+
+    for image in images:
+        sprite_sheet = pygame.image.load(join(path, image)).convert_alpha() # Here we are loading the image from path, appending the path to it, then get the transparent background
+
+        sprites = []
+        for i in range(sprite_sheet.get_width() // width): #  The width will be the width of an invidual image inside of the spritesheet
+            surface = pygame.surface((width, height), pygame.SRCALPHA, 32)
+            rect = pygame.Rect(i * width, 0, width, height) # This is the location of our image in which we want to grab the new frame from
+            surface.blit(sprite_sheet, (0, 0), rect)
+            sprites.append(pygame.transform.scale2x(surface)) # We striped out the original frame and scaled then up
+
+        if direction: # This if statement is saying; if you want a multi-directional animation, we need add these two keys to our directionary for every signle one of our animaations
+            all_sprites[image.replace(".png", "") +"_right"] = sprites # this will strip off all .png name from our base image and append _right or _left
+            all_sprites[image.replace(".png", "") +"_left"] = flip(sprites)
+        else:
+            all_sprites[image.replace(".png", "")] = sprites
+
+    return all_sprites
+
+
+class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame because it makes it easy to do picture perfect collision
     COLOR = (255, 0, 0)
     GRAVITY = 1 # We are adding an acceleration for gravity. If you want the gravity to be faster you can increment this number
 
