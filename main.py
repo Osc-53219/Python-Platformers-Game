@@ -96,6 +96,11 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites) # Every 5 frames we want to show a different sprite in whatever animation we are using. For this we take the animation count, we divide it by 5, and then we mod whatever the len of our sprite is. Making this dynamic meaning it will work for any sprite
         self.sprite = sprites[sprite_index]
         self.animation_count += 1
+        self.update()
+    
+    def update(self): # This will update the rectangle that bounds our character based on the sprite that we are showing
+        self.rect = self.sprite.get_rect(topLeft=(self.rect.x, self.rect.y)) # Depending on what sprite image we have, this will constantly adjust the rectangle (spec the width and height ). But we will use the same x and y position we have for this rectangle
+        self.mask = pygame.mask.from_surface(self.sprite) # A mask is a mapping of all of the pixels that exist in the sprite
 
     def draw(self, win): # THis draw function wil draw the window, color, and rect
         win.blit(self.sprite, (self.rect.x, self.rect.y))
