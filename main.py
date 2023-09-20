@@ -34,7 +34,7 @@ def load_sprite_sheets(dir1, dir2, width, height, direction=False):
 
         sprites = []
         for i in range(sprite_sheet.get_width() // width): #  The width will be the width of an invidual image inside of the spritesheet
-            surface = pygame.surface((width, height), pygame.SRCALPHA, 32)
+            surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
             rect = pygame.Rect(i * width, 0, width, height) # This is the location of our image in which we want to grab the new frame from
             surface.blit(sprite_sheet, (0, 0), rect)
             sprites.append(pygame.transform.scale2x(surface)) # We striped out the original frame and scaled then up
@@ -51,6 +51,7 @@ def load_sprite_sheets(dir1, dir2, width, height, direction=False):
 class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame because it makes it easy to do picture perfect collision
     COLOR = (255, 0, 0)
     GRAVITY = 1 # We are adding an acceleration for gravity. If you want the gravity to be faster you can increment this number
+    SPRITES = load_sprite_sheets("MainCharacters", "MaskDude", 32, 32, True) # This will load the  MainCharacters dir and then the second dir will be the name of the character we want to load. We need to set the width and height to 32 and we are passing True becuase we want a multidirectional sprite
 
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height) # Rather than representing all of these values individually, we are going to put them on the rectangle which will make it easier for us to move the player around
@@ -78,14 +79,14 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
             self.animation_count = 0
 
     def loop(self, fps): # This loop will be called once every frame (one itereation of the while loop). This will move our character in the correct direction
-        self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY) # This will give us somewhat realistic fall of gravity
+        # self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY) # This will give us somewhat realistic fall of gravity
         self.move(self.x_vel, self.y_vel)
 
         self.fall_count += 1
 
     def draw(self, win): # THis draw function wil draw the window, color, and rect
-        pygame.draw.rect(win, self.COLOR, self.rect)
-
+        self.sprite = self.SPRITES["idle_" + self.direction][0] # This is accessing the key from our dictionary. Then we are accessing the first frame of our dictionary which is 0
+        win.blit(self.sprite, (self.rect.x, self.rect.y))
 
 
 # Making function for background: 
