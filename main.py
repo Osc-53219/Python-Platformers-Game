@@ -177,7 +177,7 @@ def main(window): # Making the main function: We will run this to start the game
     block_size = 96
 
     player = Player(100, 100, 50, 50) # Adding player
-    blocks = [Block(0, HEIGHT - block_size, block_size)] # Adding block
+    floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in range(-WIDTH // block_size, (WIDTH * 2) // block_size)] # This for loop will create blocks that go the left and to the right of the screen
 
     run = True   # This while loop will act as our event loop
     while run:
@@ -190,7 +190,7 @@ def main(window): # Making the main function: We will run this to start the game
         
         player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
         handle_move(player)
-        draw(window, background, bg_image, player, blocks)
+        draw(window, background, bg_image, player, floor)
              
     pygame.quit()
     quit()
