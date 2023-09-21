@@ -89,11 +89,20 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
             self.animation_count = 0
 
     def loop(self, fps): # This loop will be called once every frame (one itereation of the while loop). This will move our character in the correct direction
-        # self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY) # This will give us somewhat realistic fall of gravity
+        self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY) # This will give us somewhat realistic fall of gravity
         self.move(self.x_vel, self.y_vel)
 
         self.fall_count += 1
         self.update_sprite()
+
+    def landed(self):
+        self.fall_count = 0 # If we land we need to reset our gravity(fall_count)
+        self.y_vel = 0
+        self.jump_count = 0
+
+    def hit_head(self):
+        self.count = 0
+        self.y_vel += -1 # If we hit out head we want to reverse the velocity so that we move down
 
     def update_sprite(self): # This function will update our sprite. 
         sprite_sheet = "idle" # This the defualt sprite sheet
@@ -159,8 +168,22 @@ def draw(window, background, bg_image, player, objects):
 
     pygame.display.update() # We update the frame so that every single frame clears the screen
 
+def handle_vertical_collision(player, objects, dy): # Adding collision
+    collided_objects = []
+    for obj in objects: # This will be all the objects we could be colliding with
+        if pygame.sprite.collide_mask(player, obj):
+            if dy > 0: # If we are moving down on the screen 
+                player.rect.bottom = obj.rect.top # We take to bottom of our player rectangle(players feet) and make it = to the top of the obj we are colliding with
+                player.landed()
+            elif dy < 0:
+                player.rect.top = obj.rect.bottom # If we are moving up then we are hitting the bottom of an obj so we need to make the top = to the bottom
+                player.hit_head()
 
-def handle_move(player): # This function is in charge of moving player
+        collided_objects.append(obj)
+
+    return collided_objects
+
+def handle_move(player, objects): # This function is in charge of moving player
     keys = pygame.key.get_pressed() # Checking if the keys on the keyboard are getting pressed
 
     player.x_vel = 0 # It's important to set the player velocity to zero to stay consistant with movement
@@ -168,6 +191,8 @@ def handle_move(player): # This function is in charge of moving player
         player.move_left(PLAYER_VEL)
     if keys[pygame.K_RIGHT]:
         player.move_right(PLAYER_VEL)
+
+    handle_vertical_collision(player, objects, player.y_vel)
 
 
 def main(window): # Making the main function: We will run this to start the game
@@ -189,7 +214,7 @@ def main(window): # Making the main function: We will run this to start the game
                 break
         
         player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
-        handle_move(player)
+        handle_move(player, floor)
         draw(window, background, bg_image, player, floor)
              
     pygame.quit()
