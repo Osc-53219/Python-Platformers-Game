@@ -47,6 +47,14 @@ def load_sprite_sheets(dir1, dir2, width, height, direction=False):
 
     return all_sprites
 
+def get_block(size): # This function passes the size in which we want our block to be. Then we create an image of that size.
+    path = join("assets", "Terrain", "Terrain.png") # This will find the block that we want in out Terrain folder
+    image = pygame.image.load(path).convert_alpha()
+    surface = pygame.Surface((size, size), pygame.SRCALPHA, 32)
+    rect = pygame.Rect(96, 0, size, size) # The image we want start is 96 pixels from the top of the screen. Here you pass the positionin which you want to load the image from, from the actual Terrain image
+    surface.blit(image, (0, 0), rect)
+    return pygame.transform.scale2x(surface)
+
 
 class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame because it makes it easy to do picture perfect collision
     COLOR = (255, 0, 0)
@@ -100,7 +108,7 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         self.update()
     
     def update(self): # This will update the rectangle that bounds our character based on the sprite that we are showing
-        self.rect = self.sprite.get_rect(topLeft=(self.rect.x, self.rect.y)) # Depending on what sprite image we have, this will constantly adjust the rectangle (spec the width and height ). But we will use the same x and y position we have for this rectangle
+        self.rect = self.sprite.get_rect(topleft=(self.rect.x, self.rect.y)) # Depending on what sprite image we have, this will constantly adjust the rectangle (spec the width and height ). But we will use the same x and y position we have for this rectangle
         self.mask = pygame.mask.from_surface(self.sprite) # A mask is a mapping of all of the pixels that exist in the sprite
 
     def draw(self, win): # THis draw function wil draw the window, color, and rect
@@ -118,6 +126,14 @@ class Object(pygame.sprite.Sprite): # This will be a base class that we will use
     def draw(self, win):
         win.blit(self.image, (self.rect.x, self.rect.y))
 
+class Block(Object):
+    def __init__(self, x, y, size):
+        super().__init__(x, y, size, size)
+        block = get_block(size) # Here we are getting the image that we need
+        self.image.blit(block, (0, 0)) # Here we blit the image: which is a pygame surface
+        self.mask = pygame.mask.from_surface(self.image)
+
+
 def get_background(name): # Making function for background
     image = pygame.image.load(join("assets", "Background", name))
     _, _, width, height = image.get_rect() # This provides the x, y, width, and height of ("_, _," means we dont care about the x, y) 
@@ -132,9 +148,12 @@ def get_background(name): # Making function for background
     return tiles, image # We return the tiles and image so we can know what image we are going to use when we are drawing all these tiles
 
 
-def draw(window, background, bg_image, player):
+def draw(window, background, bg_image, player, objects):
     for tile in background: 
         window.blit(bg_image, tile) # This is where we draw the background: passing in the position in which we want to draW it at which is going to be 'tile'
+
+    for obj in objects:
+        obj.draw(window)
 
     player.draw(window)
 
@@ -155,7 +174,10 @@ def main(window): # Making the main function: We will run this to start the game
     clock = pygame.time.Clock()
     background, bg_image = get_background("Purple.png") # Adding background to main function
 
+    block_size = 96
+
     player = Player(100, 100, 50, 50) # Adding player
+    blocks = [Block(0, HEIGHT - block_size, block_size)] # Adding block
 
     run = True   # This while loop will act as our event loop
     while run:
@@ -168,7 +190,7 @@ def main(window): # Making the main function: We will run this to start the game
         
         player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
         handle_move(player)
-        draw(window, background, bg_image, player)
+        draw(window, background, bg_image, player, blocks)
              
     pygame.quit()
     quit()
