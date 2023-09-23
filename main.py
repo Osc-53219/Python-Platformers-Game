@@ -219,7 +219,11 @@ def main(window): # Making the main function: We will run this to start the game
     block_size = 96
 
     player = Player(100, 100, 50, 50) # Adding player
-    floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in range(-WIDTH // block_size, (WIDTH * 2) // block_size)] # This for loop will create blocks that go the left and to the right of the screen
+    floor = [Block(i * block_size, HEIGHT - block_size, block_size) 
+             for i in range(-WIDTH // block_size, (WIDTH * 2) // block_size)] # This for loop will create blocks that go the left and to the right of the screen
+
+    objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size),
+               Block(block_size * 3, HEIGHT - block_size * 4, block_size)]
 
     offset_x = 0
     scroll_area_width = 200
@@ -238,8 +242,8 @@ def main(window): # Making the main function: We will run this to start the game
                     player.jump()
         
         player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
-        handle_move(player, floor)
-        draw(window, background, bg_image, player, floor, offset_x)
+        handle_move(player, objects)
+        draw(window, background, bg_image, player, objects, offset_x)
 
         if ((player.rect.right - offset_x >= WIDTH - scroll_area_width) and player.x_vel > 0) or (
                 (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):
