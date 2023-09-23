@@ -59,7 +59,7 @@ def get_block(size): # This function passes the size in which we want our block 
 class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame because it makes it easy to do picture perfect collision
     COLOR = (255, 0, 0)
     GRAVITY = 1 # We are adding an acceleration for gravity. If you want the gravity to be faster you can increment this number
-    SPRITES = load_sprite_sheets("MainCharacters", "MaskDude", 32, 32, True) # This will load the  MainCharacters dir and then the second dir will be the name of the character we want to load. We need to set the width and height to 32 and we are passing True becuase we want a multidirectional sprite
+    SPRITES = load_sprite_sheets("MainCharacters", "PinkMan", 32, 32, True) # This will load the  MainCharacters dir and then the second dir will be the name of the character we want to load. We need to set the width and height to 32 and we are passing True becuase we want a multidirectional sprite
     ANIMATION_DELAY = 3 # This is going to account for the amount of delay between changing sprites
 
     def __init__(self, x, y, width, height):
@@ -68,9 +68,19 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         self.x_vel = 0
         self.y_vel = 0
         self.mask = None
-        self.direction = "left" # We are adding this direction becuase we need to keep track of what direction the Player is facing
+        self.direction = "left" # We are adding this direction becuase we need to keep track of what direction theMaskDude Player is facing
         self.animation_count = 0 # We need to reset the count to change the animation frame
         self.fall_count = 0 # We need to keep track of how long we have been falling so that we know how quicly we should be accelerating downward 
+        self.jump_count = 0 
+ 
+    def jump(self):
+        self.y_vel = -self.GRAVITY * 8 # We are multipling negative so that we jump UP in the air
+        self.animation_count = 0
+        self.jump_count += 1 # As soon as we jump we are getting rid of any gravity the character already obtained
+        if self.jump_count == 1:
+            self.fall_count = 0 # Then we will start applying gravity after we jump
+
+
 
     def move(self, dx, dy): # Adding move function which will take in the displacement of the x and y direction
         self.rect.x += dx # If we want to move up, down, left, right we just change the sign of dx and dy
