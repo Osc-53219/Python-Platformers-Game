@@ -116,7 +116,14 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
 
     def update_sprite(self): # This function will update our sprite. 
         sprite_sheet = "idle" # This the defualt sprite sheet
-        if self.x_vel != 0:
+        if self.y_vel < 0:
+            if self.jump_count == 1: # This is handling regular jump
+                sprite_sheet = "jump"
+            elif self.jump_count ==2: # This is handling double jump
+                sprite_sheet = "double_jump"
+        elif self.y_vel > self.GRAVITY * 2: # This is handling the falling portion
+            sprite_sheet = "fall"
+        elif self.x_vel != 0:
             sprite_sheet = "run"
 
         sprite_sheet_name = sprite_sheet + "_" + self.direction
