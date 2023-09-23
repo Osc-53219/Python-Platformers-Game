@@ -222,6 +222,10 @@ def main(window): # Making the main function: We will run this to start the game
             if event.type == pygame.QUIT: # First event we will check for is if the user quit the game
                 run = False
                 break
+                
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and player.jump_count < 2: # This is to allow double jumping
+                    player.jump()
         
         player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
         handle_move(player, floor)
