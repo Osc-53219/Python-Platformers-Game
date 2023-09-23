@@ -137,8 +137,8 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         self.rect = self.sprite.get_rect(topleft=(self.rect.x, self.rect.y)) # Depending on what sprite image we have, this will constantly adjust the rectangle (spec the width and height ). But we will use the same x and y position we have for this rectangle
         self.mask = pygame.mask.from_surface(self.sprite) # A mask is a mapping of all of the pixels that exist in the sprite
 
-    def draw(self, win): # THis draw function wil draw the window, color, and rect
-        win.blit(self.sprite, (self.rect.x, self.rect.y))
+    def draw(self, win, offset_x): # THis draw function wil draw the window, color, and rect
+        win.blit(self.sprite, (self.rect.x - offset_x, self.rect.y))
 
 class Object(pygame.sprite.Sprite): # This will be a base class that we will use for all objects so that the collision will be uniform across all of them
     def __init__(self, x, y, width, height, name=None):
@@ -149,8 +149,8 @@ class Object(pygame.sprite.Sprite): # This will be a base class that we will use
         self.height = height
         self.name = name
 
-    def draw(self, win):
-        win.blit(self.image, (self.rect.x, self.rect.y))
+    def draw(self, win, offset_x):
+        win.blit(self.image, (self.rect.x - offset_x, self.rect.y))
 
 class Block(Object):
     def __init__(self, x, y, size):
@@ -174,14 +174,14 @@ def get_background(name): # Making function for background
     return tiles, image # We return the tiles and image so we can know what image we are going to use when we are drawing all these tiles
 
 
-def draw(window, background, bg_image, player, objects):
+def draw(window, background, bg_image, player, objects, offset_x):
     for tile in background: 
         window.blit(bg_image, tile) # This is where we draw the background: passing in the position in which we want to draW it at which is going to be 'tile'
 
     for obj in objects:
-        obj.draw(window)
+        obj.draw(window, offset_x)
 
-    player.draw(window)
+    player.draw(window, offset_x)
 
     pygame.display.update() # We update the frame so that every single frame clears the screen
 
@@ -221,6 +221,9 @@ def main(window): # Making the main function: We will run this to start the game
     player = Player(100, 100, 50, 50) # Adding player
     floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in range(-WIDTH // block_size, (WIDTH * 2) // block_size)] # This for loop will create blocks that go the left and to the right of the screen
 
+    offset_x = 0
+    scroll_area_width = 200
+
     run = True   # This while loop will act as our event loop
     while run:
         clock.tick(FPS) # This ensures that our while loop is going to run no more than 60 FPS to regulate the frame rate across different devices
@@ -236,7 +239,11 @@ def main(window): # Making the main function: We will run this to start the game
         
         player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
         handle_move(player, floor)
-        draw(window, background, bg_image, player, floor)
+        draw(window, background, bg_image, player, floor, offset_x)
+
+        if ((player.rect.right - offset_x >= WIDTH - scroll_area_width) and player.x_vel > 0) or (
+                (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):
+            offset_x += player.x_vel
              
     pygame.quit()
     quit()
