@@ -219,9 +219,12 @@ def handle_move(player, objects): # This function is in charge of moving player
     keys = pygame.key.get_pressed() # Checking if the keys on the keyboard are getting pressed
 
     player.x_vel = 0 # It's important to set the player velocity to zero to stay consistant with movement
-    if keys[pygame.K_LEFT]:
+    collide_left = collide(player, objects, -PLAYER_VEL * 2)
+    collide_right = collide(player, objects, PLAYER_VEL * 2)
+
+    if keys[pygame.K_LEFT] and not collide_left:
         player.move_left(PLAYER_VEL)
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] and not collide_right:
         player.move_right(PLAYER_VEL)
 
     handle_vertical_collision(player, objects, player.y_vel)
