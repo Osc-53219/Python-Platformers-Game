@@ -200,6 +200,21 @@ def handle_vertical_collision(player, objects, dy): # Adding collision
 
     return collided_objects
 
+def collide(player, objects, dx):
+    player.move(dx, 0) # This is to check if the player were to move the right or left, would they hit a block?
+    player.update() # This is to update the rectangle in the mask before we check for collision 
+    collided_object = None
+    for obj in objects:
+        if pygame.sprite.collide_mask(player, obj): # Using the updates mask we are chcking if we would be colliding with an object
+            collided_object = obj
+            break
+
+    player.move(-dx, 0)
+    player.update()
+    return collided_object
+
+
+
 def handle_move(player, objects): # This function is in charge of moving player
     keys = pygame.key.get_pressed() # Checking if the keys on the keyboard are getting pressed
 
