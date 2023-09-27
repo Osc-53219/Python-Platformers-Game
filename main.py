@@ -71,7 +71,9 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         self.direction = "left" # We are adding this direction becuase we need to keep track of what direction theMaskDude Player is facing
         self.animation_count = 0 # We need to reset the count to change the animation frame
         self.fall_count = 0 # We need to keep track of how long we have been falling so that we know how quicly we should be accelerating downward 
-        self.jump_count = 0 
+        self.jump_count = 0
+        self.hit = False
+        self.hit_count = 0
  
     def jump(self):
         self.y_vel = -self.GRAVITY * 8 # We are multipling negative so that we jump UP in the air
@@ -80,11 +82,13 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         if self.jump_count == 1:
             self.fall_count = 0 # Then we will start applying gravity after we jump
 
-
-
     def move(self, dx, dy): # Adding move function which will take in the displacement of the x and y direction
         self.rect.x += dx # If we want to move up, down, left, right we just change the sign of dx and dy
         self.rect.y += dy
+
+    def make_hit(self):
+        self.hit = True
+        self.hit_count = 0
 
     def move_left(self, veL):
         self.x_vel = -veL # We are using negative velocity to move left which means we have to subtract from our x position
@@ -102,6 +106,11 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY) # This will give us somewhat realistic fall of gravity
         self.move(self.x_vel, self.y_vel)
 
+        if  self.hit:
+            self.hit_count += 1
+        if self.hit_count > fps * 2:
+            self.hit = False
+
         self.fall_count += 1
         self.update_sprite()
 
@@ -116,7 +125,9 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
 
     def update_sprite(self): # This function will update our sprite. 
         sprite_sheet = "idle" # This the defualt sprite sheet
-        if self.y_vel < 0:
+        if self.hit:
+            sprite_sheet = "hit"
+        elif self.y_vel < 0:
             if self.jump_count == 1: # This is handling regular jump
                 sprite_sheet = "jump"
             elif self.jump_count ==2: # This is handling double jump
@@ -226,7 +237,7 @@ def handle_vertical_collision(player, objects, dy): # Adding collision
                 player.rect.top = obj.rect.bottom # If we are moving up then we are hitting the bottom of an obj so we need to make the top = to the bottom
                 player.hit_head()
 
-        collided_objects.append(obj)
+            collided_objects.append(obj)
 
     return collided_objects
 
@@ -257,7 +268,11 @@ def handle_move(player, objects): # This function is in charge of moving player
     if keys[pygame.K_RIGHT] and not collide_right:
         player.move_right(PLAYER_VEL)
 
-    handle_vertical_collision(player, objects, player.y_vel)
+    vertical_collide = handle_vertical_collision(player, objects, player.y_vel) # This is going to loop through all of these objects and check to see if we hit fire
+    to_check = [collide_left, collide_right, *vertical_collide]
+    for obj in to_check: # This loops through all the objects we collide with 
+        if obj and obj.name == "fire": 
+            player.make_hit()
 
 
 def main(window): # Making the main function: We will run this to start the game
