@@ -163,7 +163,7 @@ class Fire(Object):
     ANIMATION_DELAY = 3
 
     def __init__(self, x, y, width, height):
-        super().__init__(self, x, y, width. height, "fire")
+        super().__init__(x, y, width, height, "fire")
         self.fire = load_sprite_sheets("Traps", "Fire", width, height)
         self.image = self.fire["off"][0]
         self.mask = pygame.mask.from_surface(self.image)
@@ -183,8 +183,8 @@ class Fire(Object):
         self.image = sprites[sprite_index]
         self.animation_count += 1
 
-        self.rect = self.sprite.get_rect(topleft=(self.rect.x, self.rect.y))
-        self.mask = pygame.mask.from_surface(self.sprite)
+        self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y))
+        self.mask = pygame.mask.from_surface(self.image)
 
         if self.animation_count // self.ANIMATION_DELAY > len(sprites): # This is to make sure the animation count doesnt get too large. 
             self.animation_count = 0
@@ -267,11 +267,13 @@ def main(window): # Making the main function: We will run this to start the game
     block_size = 96
 
     player = Player(100, 100, 50, 50) # Adding player
+    fire = Fire(100, HEIGHT - block_size - 64, 16, 32)
+    fire.on()
     floor = [Block(i * block_size, HEIGHT - block_size, block_size) 
              for i in range(-WIDTH // block_size, (WIDTH * 2) // block_size)] # This for loop will create blocks that go the left and to the right of the screen
 
     objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size),
-               Block(block_size * 3, HEIGHT - block_size * 4, block_size)]
+               Block(block_size * 3, HEIGHT - block_size * 4, block_size), fire]
 
     offset_x = 0
     scroll_area_width = 200
@@ -290,6 +292,7 @@ def main(window): # Making the main function: We will run this to start the game
                     player.jump()
         
         player.loop(FPS) # Need to call loop function becuase it is the function that actually moves the player
+        fire.loop()
         handle_move(player, objects)
         draw(window, background, bg_image, player, objects, offset_x)
 
