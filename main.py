@@ -111,8 +111,8 @@ class Player(pygame.sprite.Sprite): # This class will inherit sprite from pygame
         self.jump_count = 0
 
     def hit_head(self):
-        self.count = 0
-        self.y_vel += -1 # If we hit out head we want to reverse the velocity so that we move down
+        self.count = 0 # Resets the fall_count to prevent acceleration
+        self.y_vel = 0 # Set the vertical velocity to zero to stop the player from moving up
 
     def update_sprite(self): # This function will update our sprite. 
         sprite_sheet = "idle" # This the defualt sprite sheet
