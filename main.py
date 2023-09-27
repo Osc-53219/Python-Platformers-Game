@@ -170,6 +170,25 @@ class Fire(Object):
         self.animation_count = 0
         self.animation_name = "off"
 
+    def on(self):
+        self.animation_name = "on"
+
+    def off(self):
+        self.animation_name = "off"
+
+    def loop(self):
+        sprites = self.fire[self.animation_name]
+        sprite_index = (self.animation_count // 
+                        self.ANIMATION_DELAY) % len(sprites) 
+        self.image = sprites[sprite_index]
+        self.animation_count += 1
+
+        self.rect = self.sprite.get_rect(topleft=(self.rect.x, self.rect.y))
+        self.mask = pygame.mask.from_surface(self.sprite)
+
+        if self.animation_count // self.ANIMATION_DELAY > len(sprites): # This is to make sure the animation count doesnt get too large. 
+            self.animation_count = 0
+
 
 def get_background(name): # Making function for background
     image = pygame.image.load(join("assets", "Background", name))
